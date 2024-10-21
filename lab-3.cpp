@@ -160,13 +160,23 @@ int main(int argc, const char* argv[]) {
     if (isHuman) {
         cout << "Первый массив: ";
         for (int i = 0; i < 15; ++i) {
-            cout << OldFirstArr[i] << " ";
+            if (i != 14) {
+                cout << OldFirstArr[i] << " ";
+            }
+            else {
+                cout << OldFirstArr[i];
+            }
         }
         cout << endl;
         
         cout << "Второй массив: ";
         for (int i = 0; i < 15; ++i) {
-            cout << OldSecondArr[i] << " ";
+            if (i != 14) {
+                cout << OldSecondArr[i] << " ";
+            }
+            else {
+                cout << OldSecondArr[i];
+            }
         }
         cout << endl;
         
@@ -174,7 +184,12 @@ int main(int argc, const char* argv[]) {
         
         cout << "Сортировка: ";
         for (int i = 0; i < 15; ++i) {
-            cout << SortArr[i] << " ";
+            if (i != 14) {
+                cout << SortArr[i] << " ";
+            }
+            else {
+                cout << SortArr[i];
+            }
         }
         cout << endl;
         
@@ -183,44 +198,80 @@ int main(int argc, const char* argv[]) {
         
         cout << "Перераспределение 1 массива: ";
         for (int i = 0; i < 15; ++i) {
-            cout << NewFirstArr[i] << " ";
+            if (i != 14) {
+                cout << NewFirstArr[i] << " ";
+            }
+            else {
+                cout << NewFirstArr[i];
+            }
         }
         cout << endl;
         
         cout << "Перераспределение 2 массива: ";
         for (int i = 0; i < 15; ++i) {
-            cout << NewSecondArr[i] << " ";
+            if (i != 14) {
+                cout << NewSecondArr[i] << " ";
+            }
+            else {
+                cout << NewSecondArr[i];
+            }
         }
         cout << endl;
     }
     else {
         for (int i = 0; i < 15; ++i) {
-            cout << OldFirstArr[i] << " ";
+            if (i != 14) {
+                cout << OldFirstArr[i] << " ";
+            }
+            else {
+                cout << OldFirstArr[i];
+            }
         }
         cout << endl;
 
         for (int i = 0; i < 15; ++i) {
-            cout << OldSecondArr[i] << " ";
+            if (i != 14) {
+                cout << OldSecondArr[i] << " ";
+            }
+            else {
+                cout << OldSecondArr[i];
+            }
         }
         cout << endl;
 
         cout << mn_1 << endl << mn_2 << endl << mn_3 << endl;
 
         for (int i = 0; i < 15; ++i) {
-            cout << SortArr[i] << " ";
+            if (i != 14) {
+                cout << SortArr[i] << " ";
+            }
+            else {
+                cout << SortArr[i];
+            }
         }
+
         cout << endl;
 
         cout << Replay << endl;
         cout << Two << endl;
 
         for (int i = 0; i < 15; ++i) {
-            cout << NewFirstArr[i] << " ";
+            if (i != 14) {
+                cout << NewFirstArr[i] << " ";
+            }
+            else {
+                cout << NewFirstArr[i];
+            }
         }
         cout << endl;
 
         for (int i = 0; i < 15; ++i) {
-            cout << NewSecondArr[i] << " ";
+            if (i != 14) {
+                cout << NewSecondArr[i] << " ";
+            }
+            else {
+                cout << NewSecondArr[i];
+            }
         }
         cout << endl;
     }
