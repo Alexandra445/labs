@@ -160,13 +160,13 @@ int main(int argc, const char* argv[]) {
     if (isHuman) {
         cout << "Первый массив: ";
         for (int i = 0; i < 15; ++i) {
-            cout << OldFirstArr[i];
+            cout << OldFirstArr[i] << " ";
         }
         cout << endl;
         
         cout << "Второй массив: ";
         for (int i = 0; i < 15; ++i) {
-            cout << OldSecondArr[i];
+            cout << OldSecondArr[i] << " ";
         }
         cout << endl;
         
@@ -174,7 +174,7 @@ int main(int argc, const char* argv[]) {
         
         cout << "Сортировка: ";
         for (int i = 0; i < 15; ++i) {
-            cout << SortArr[i];
+            cout << SortArr[i] << " ";
         }
         cout << endl;
         
@@ -183,31 +183,31 @@ int main(int argc, const char* argv[]) {
         
         cout << "Перераспределение 1 массива: ";
         for (int i = 0; i < 15; ++i) {
-            cout << NewFirstArr[i];
+            cout << NewFirstArr[i] << " ";
         }
         cout << endl;
         
         cout << "Перераспределение 2 массива: ";
         for (int i = 0; i < 15; ++i) {
-            cout << NewSecondArr[i];
+            cout << NewSecondArr[i] << " ";
         }
         cout << endl;
     }
     else {
         for (int i = 0; i < 15; ++i) {
-            cout << OldFirstArr[i];
+            cout << OldFirstArr[i] << " ";
         }
         cout << endl;
 
         for (int i = 0; i < 15; ++i) {
-            cout << OldSecondArr[i];
+            cout << OldSecondArr[i] << " ";
         }
         cout << endl;
 
         cout << mn_1 << endl << mn_2 << endl << mn_3 << endl;
 
         for (int i = 0; i < 15; ++i) {
-            cout << SortArr[i];
+            cout << SortArr[i] << " ";
         }
         cout << endl;
 
@@ -215,12 +215,12 @@ int main(int argc, const char* argv[]) {
         cout << Two << endl;
 
         for (int i = 0; i < 15; ++i) {
-            cout << NewFirstArr[i];
+            cout << NewFirstArr[i] << " ";
         }
         cout << endl;
 
         for (int i = 0; i < 15; ++i) {
-            cout << NewSecondArr[i];
+            cout << NewSecondArr[i] << " ";
         }
         cout << endl;
     }
