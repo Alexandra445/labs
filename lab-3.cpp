@@ -34,8 +34,8 @@ int main(int argc, const char* argv[]) {
     double x1, x2, a, b, c;
     cin >> x1 >> x2 >> a >> b >> c;
     //  Создание массивов 
-    double step = (x2 - x1) / 14;   //  Задаём шаг 
-    double FirstArr[15], SecondArr[15];  //  Объявляем массивы 
+    double step = (x2 - x1) / 14;
+    double FirstArr[15], SecondArr[15];
     for (int i = 0, j = 14; i < 15; i++, j--)
     {
         double X = x1 + i * step;   //  Элемент массива 
@@ -43,13 +43,13 @@ int main(int argc, const char* argv[]) {
         FirstArr[i] = Function(X, a, b, c);
         SecondArr[j] = Function(-X, a, b, c);
 
-        int A = int(trunc(a)), B = int(trunc(b)), C = int(trunc(c));    //  Здесь мы для дальнейших побитовых операций перевели double в int 
-        if (((A | B) & (A | C)) == 0) {    // Проверка на округление 
-            FirstArr[i] = trunc(FirstArr[i]);       // Округление до целого, если целая часть 
-            SecondArr[j] = trunc(SecondArr[j]);     // trunc оставляет только целое значение (округляет вниз) 
+        int A = int(trunc(a)), B = int(trunc(b)), C = int(trunc(c));
+        if (((A | B) & (A | C)) == 0) {
+            FirstArr[i] = trunc(FirstArr[i]);
+            SecondArr[j] = trunc(SecondArr[j]);
         }
         else {
-            FirstArr[i] = round(FirstArr[i] * 100) / 100;             // Округление до 2 знаков 
+            FirstArr[i] = round(FirstArr[i] * 100) / 100;
             SecondArr[j] = round(SecondArr[j] * 100) / 100;
         }
     }
@@ -62,20 +62,31 @@ int main(int argc, const char* argv[]) {
 
     //  Сортировка 
     double SortArr[15];
-    for (int i = 0; i < 15; i++)SortArr[i] = FirstArr[i];  //  Чтобы не портить исходный массив 
+    for (int i = 0; i < 15; i++)  SortArr[i] = FirstArr[i];
     //  Сортировка выбором 
-    for (int i = 0; i < 15; i++)
-        for (int j = 14; j > i; j--)
-            if (SortArr[i] > SortArr[j])swap(SortArr[i], SortArr[j]);   //  swap меняет местами значения 2-х элементов 
+    for (int k = 0; k < 14; k++) {
+        int imin = k;
+        for (int i = k + 1; i < 15; i++) {
+            if (SortArr[i] < SortArr[imin]) {
+                imin = i;
+            }
+        }
+        if (imin != k)
+        {
+            int tmp = SortArr[k];
+            SortArr[k] = SortArr[imin];
+            SortArr[imin] = tmp;
+        }
 
+    }
 
     //  Поиск повторов 
-    int Replay = 0;     //  Количество повторов изначально 0 
-    double Memory = FirstArr[0];    //  Запоминаем значение повтора 
+    int Replay = 0;
+    double Memory = FirstArr[0];
     bool prov = false;
     for (int i = 1; i < 15; i++)
     {
-        if ((FirstArr[i] == Memory) && (prov == false))  //  prov == false чтобы исключить подсчёт уже знакомых повторов 
+        if ((FirstArr[i] == Memory) && (prov == false))
         {
             Replay++;
             prov = true;
@@ -87,45 +98,45 @@ int main(int argc, const char* argv[]) {
         }
     }
 
-    //  Поиск степеней 2 
-    int Two = -1;
-    for (int i = 0; i < 13; i++)     //  До 13-ти, т.к. последовательностью будем считать хотя бы 3 элемента 
-    {
-        int ind = 0;
-        for (int j = i; j < i + 3; j++)   //  Допустим что последовательность может быть в середине массива и содержать хотя бы 3 значения 
-        {
-            int k = 1;
-            while (k <= FirstArr[i])k *= 2;  //  Степени 2 
+    //  Поиск степеней 2
+    int two = -1;
+    for (int i = 0; i < 15; i++) {
+        bool isPowerOfTwo = true;
+        int expectedPower = 1;  // <- первая степень двойки
 
-            if (FirstArr[j] == k)ind++;
-            else break;     //  Если последовательность нарушается, то переходим к следующему элементу 
+        for (int j = i; j < 15; j++) {
+            if (FirstArr[j] != expectedPower) {
+                isPowerOfTwo = false;
+                break;
+            }
+            expectedPower *= 2;
         }
-        if (ind == 3)
-        {
-            Two = i;
-            break;      //  Поскольку нам нужно найти лишь 1 индекс, то дальше нет смысла искать 
+
+        if (isPowerOfTwo) {
+            two = i;
+            break;
         }
     }
 
     //Перераспределение 
-    double NewFirstArr[15], NewSecondArr[15];   //  Новые массивы 
-    double OldFirstArr[15], OldSecondArr[15];   //  Запоминаем старые массивы для вывода 
+    double NewFirstArr[15], NewSecondArr[15];
+    double OldFirstArr[15], OldSecondArr[15];
     for (int i = 0; i < 15; i++)
     {
         OldFirstArr[i] = FirstArr[i];
         OldSecondArr[i] = SecondArr[i];
     }
     int ind = 0;
-    for (int i = 0; i < 15; i++)             //  Заполняем 1-й массив значениями из 1-го массива 
+    for (int i = 0; i < 15; i++)
     {
         if (FirstArr[i] < 0)
         {
-            NewFirstArr[ind] = FirstArr[i]; //  Запоминаем в новый 1-й массив значения 
-            FirstArr[i] = 0;                //  Стираем их из прошлого 
+            NewFirstArr[ind] = FirstArr[i];
+            FirstArr[i] = 0;
             ind++;
         }
     }
-    for (int i = 0; i < 15; i++)             //  Заполняем 1-й массив значениями из 2-го массива 
+    for (int i = 0; i < 15; i++)
     {
         if ((ind < 15) && (SecondArr[i] < 0))
         {
@@ -134,9 +145,9 @@ int main(int argc, const char* argv[]) {
             ind++;
         }
     }
-    for (int i = ind + 1; i < 15; i++)NewFirstArr[i] = 0;     //  Заполняем нулями 
+    for (int i = ind + 1; i < 15; i++)NewFirstArr[i] = 0;
     ind = 0;
-    for (int i = 0; i < 15; i++)             //  Заполняем 2-й массив значениями из 2-го массива 
+    for (int i = 0; i < 15; i++)
     {
         if (SecondArr[i] > 0)
         {
@@ -145,7 +156,7 @@ int main(int argc, const char* argv[]) {
             ind++;
         }
     }
-    for (int i = 0; i < 15; i++)             //  Заполняем 2-й массив значениями из 1-го массива 
+    for (int i = 0; i < 15; i++)
     {
         if ((ind < 15) && (FirstArr[i] > 0))
         {
@@ -154,7 +165,7 @@ int main(int argc, const char* argv[]) {
             ind++;
         }
     }
-    for (int i = ind + 1; i < 15; i++)NewSecondArr[i] = 0;    //  Заполняем нулями 
+    for (int i = ind + 1; i < 15; i++)NewSecondArr[i] = 0;
 
 
     if (isHuman) {
@@ -168,7 +179,7 @@ int main(int argc, const char* argv[]) {
             }
         }
         cout << endl;
-        
+
         cout << "Второй массив: ";
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
@@ -179,9 +190,9 @@ int main(int argc, const char* argv[]) {
             }
         }
         cout << endl;
-        
+
         cout << "Минимумы: " << mn_1 << endl << mn_2 << endl << mn_3 << endl;
-        
+
         cout << "Сортировка: ";
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
@@ -192,10 +203,10 @@ int main(int argc, const char* argv[]) {
             }
         }
         cout << endl;
-        
+
         cout << "Повторы: " << Replay << endl;
-        cout << "Степень 2: " << Two << endl;
-        
+        cout << "Степень 2: " << two << endl;
+
         cout << "Перераспределение 1 массива: ";
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
@@ -206,7 +217,7 @@ int main(int argc, const char* argv[]) {
             }
         }
         cout << endl;
-        
+
         cout << "Перераспределение 2 массива: ";
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
@@ -253,7 +264,7 @@ int main(int argc, const char* argv[]) {
         cout << endl;
 
         cout << Replay << endl;
-        cout << Two << endl;
+        cout << two << endl;
 
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
