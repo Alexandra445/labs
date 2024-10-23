@@ -73,7 +73,7 @@ int main(int argc, const char* argv[]) {
         }
         if (imin != k)
         {
-            int tmp = SortArr[k];
+           double tmp = SortArr[k];
             SortArr[k] = SortArr[imin];
             SortArr[imin] = tmp;
         }
