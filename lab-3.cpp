@@ -30,16 +30,14 @@ int main(int argc, const char* argv[]) {
         cout << "Введите 5 действительных чисел: " << endl;
     }
 
-    //  Ввод 
     double x1, x2, a, b, c;
     cin >> x1 >> x2 >> a >> b >> c;
-    //  Создание массивов 
+
     double step = (x2 - x1) / 14;
     double FirstArr[15], SecondArr[15];
-    for (int i = 0, j = 14; i < 15; i++, j--)
-    {
-        double X = x1 + i * step;   //  Элемент массива 
-        //  Запускаем функцию F 
+
+    for (int i = 0, j = 14; i < 15; i++, j--) {
+        double X = x1 + i * step;
         FirstArr[i] = Function(X, a, b, c);
         SecondArr[j] = Function(-X, a, b, c);
 
@@ -54,56 +52,25 @@ int main(int argc, const char* argv[]) {
         }
     }
 
-    //  Минимумы пятерок 1-го массива 
-    //  Т.к. min принимает только 2 аргумента, мы в min помещаем ещё один min 
-    double mn_1 = min(FirstArr[0], min(FirstArr[1], min(FirstArr[2], min(FirstArr[3], FirstArr[4]))));
-    double mn_2 = min(FirstArr[5], min(FirstArr[6], min(FirstArr[7], min(FirstArr[8], FirstArr[9]))));
-    double mn_3 = min(FirstArr[10], min(FirstArr[11], min(FirstArr[12], min(FirstArr[13], FirstArr[14]))));
+    double mn_1 = min({ FirstArr[0], FirstArr[1], FirstArr[2], FirstArr[3], FirstArr[4] });
+    double mn_2 = min({ FirstArr[5], FirstArr[6], FirstArr[7], FirstArr[8], FirstArr[9] });
+    double mn_3 = min({ FirstArr[10], FirstArr[11], FirstArr[12], FirstArr[13], FirstArr[14] });
 
-    //  Сортировка 
     double SortArr[15];
-    for (int i = 0; i < 15; i++)  SortArr[i] = FirstArr[i];
-    //  Сортировка выбором 
-    for (int k = 0; k < 14; k++) {
-        int imin = k;
-        for (int i = k + 1; i < 15; i++) {
-            if (SortArr[i] < SortArr[imin]) {
-                imin = i;
-            }
-        }
-        if (imin != k)
-        {
-           double tmp = SortArr[k];
-            SortArr[k] = SortArr[imin];
-            SortArr[imin] = tmp;
-        }
+    copy(begin(FirstArr), end(FirstArr), begin(SortArr));
+    sort(begin(SortArr), end(SortArr));
 
-    }
-
-    //  Поиск повторов 
     int Replay = 0;
-    double Memory = FirstArr[0];
-    bool prov = false;
-    for (int i = 1; i < 15; i++)
-    {
-        if ((FirstArr[i] == Memory) && (prov == false))
-        {
+    for (int i = 1; i < 15; i++) {
+        if (SortArr[i] == SortArr[i - 1]) {
             Replay++;
-            prov = true;
-        }
-        else
-        {
-            Memory = FirstArr[i];
-            prov = false;
         }
     }
 
-    //  Поиск степеней 2
     int two = -1;
     for (int i = 0; i < 15; i++) {
         bool isPowerOfTwo = true;
-        int expectedPower = 1;  // <- первая степень двойки
-
+        int expectedPower = 1;
         for (int j = i; j < 15; j++) {
             if (FirstArr[j] != expectedPower) {
                 isPowerOfTwo = false;
@@ -111,71 +78,51 @@ int main(int argc, const char* argv[]) {
             }
             expectedPower *= 2;
         }
-
         if (isPowerOfTwo) {
             two = i;
             break;
         }
     }
 
-    //Перераспределение 
-    double NewFirstArr[15], NewSecondArr[15];
-    double OldFirstArr[15], OldSecondArr[15];
-    for (int i = 0; i < 15; i++)
-    {
-        OldFirstArr[i] = FirstArr[i];
-        OldSecondArr[i] = SecondArr[i];
-    }
-    int ind = 0;
-    for (int i = 0; i < 15; i++)
-    {
-        if (FirstArr[i] < 0)
-        {
-            NewFirstArr[ind] = FirstArr[i];
-            FirstArr[i] = 0;
-            ind++;
-        }
-    }
-    for (int i = 0; i < 15; i++)
-    {
-        if ((ind < 15) && (SecondArr[i] < 0))
-        {
-            NewFirstArr[ind] = SecondArr[i];
-            SecondArr[i] = 0;
-            ind++;
-        }
-    }
-    for (int i = ind + 1; i < 15; i++)NewFirstArr[i] = 0;
-    ind = 0;
-    for (int i = 0; i < 15; i++)
-    {
-        if (SecondArr[i] > 0)
-        {
-            NewSecondArr[ind] = SecondArr[i];
-            SecondArr[i] = 0;
-            ind++;
-        }
-    }
-    for (int i = 0; i < 15; i++)
-    {
-        if ((ind < 15) && (FirstArr[i] > 0))
-        {
-            NewSecondArr[ind] = FirstArr[i];
-            FirstArr[i] = 0;
-            ind++;
-        }
-    }
-    for (int i = ind + 1; i < 15; i++)NewSecondArr[i] = 0;
+    double NewFirstArr[15] = { 0 };
+    double NewSecondArr[15] = { 0 };
 
+    // перераспределение элементов
+    int firstIndex = 0, secondIndex = 0;
 
+    // заполняем отрицательные числа в первый массив
+    for (int i = 0; i < 15; i++) {
+        if (FirstArr[i] < 0) {
+            NewFirstArr[firstIndex++] = FirstArr[i];
+        }
+    }
+    for (int i = 0; i < 15; i++) {
+        if (SecondArr[i] < 0) {
+            NewFirstArr[firstIndex++] = SecondArr[i];
+        }
+    }
+
+    // заполняем положительные числа во второй массив
+    for (int i = 0; i < 15; i++) {
+        if (SecondArr[i] > 0) {
+            NewSecondArr[secondIndex++] = SecondArr[i];
+        }
+    }
+    for (int i = 0; i < 15; i++) {
+        if (FirstArr[i] > 0) {
+            NewSecondArr[secondIndex++] = FirstArr[i];
+        }
+    }
+
+    // вывод результатов
     if (isHuman) {
         cout << "Первый массив: ";
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
-                cout << OldFirstArr[i] << " ";
+                cout << FirstArr[i] << " ";
             }
             else {
-                cout << OldFirstArr[i];
+                cout << FirstArr[i];
             }
         }
         cout << endl;
@@ -183,15 +130,17 @@ int main(int argc, const char* argv[]) {
         cout << "Второй массив: ";
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
-                cout << OldSecondArr[i] << " ";
+                cout << SecondArr[i] << " ";
             }
             else {
-                cout << OldSecondArr[i];
+                cout << SecondArr[i];
             }
         }
         cout << endl;
 
-        cout << "Минимумы: " << mn_1 << endl << mn_2 << endl << mn_3 << endl;
+        cout << mn_1 << endl;
+        cout << mn_2 << endl;
+        cout << mn_3 << endl;
 
         cout << "Сортировка: ";
         for (int i = 0; i < 15; ++i) {
@@ -205,6 +154,7 @@ int main(int argc, const char* argv[]) {
         cout << endl;
 
         cout << "Повторы: " << Replay << endl;
+
         cout << "Степень 2: " << two << endl;
 
         cout << "Перераспределение 1 массива: ";
@@ -232,25 +182,27 @@ int main(int argc, const char* argv[]) {
     else {
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
-                cout << OldFirstArr[i] << " ";
+                cout << FirstArr[i] << " ";
             }
             else {
-                cout << OldFirstArr[i];
+                cout << FirstArr[i];
             }
         }
         cout << endl;
 
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
-                cout << OldSecondArr[i] << " ";
+                cout << SecondArr[i] << " ";
             }
             else {
-                cout << OldSecondArr[i];
+                cout << SecondArr[i];
             }
         }
         cout << endl;
 
-        cout << mn_1 << endl << mn_2 << endl << mn_3 << endl;
+        cout << mn_1 << endl;
+        cout << mn_2 << endl;
+        cout << mn_3 << endl;
 
         for (int i = 0; i < 15; ++i) {
             if (i != 14) {
@@ -260,10 +212,10 @@ int main(int argc, const char* argv[]) {
                 cout << SortArr[i];
             }
         }
-
         cout << endl;
 
         cout << Replay << endl;
+
         cout << two << endl;
 
         for (int i = 0; i < 15; ++i) {
