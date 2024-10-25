@@ -15,7 +15,7 @@ double Function(double x, double a, double b, double c) {
     else {
         return x / c;
     }
-}
+} 
 
 int main(int argc, const char* argv[]) {
     setlocale(LC_ALL, "RUS");
@@ -87,37 +87,41 @@ int main(int argc, const char* argv[]) {
     double NewFirstArr[15] = { 0 };
     double NewSecondArr[15] = { 0 };
 
-    // перераспределение элементов
+    // перераспределение элементов 
     int firstIndex = 0, secondIndex = 0;
 
     // заполняем отрицательные числа в первый массив
     for (int i = 0; i < 15; i++) {
-        if (FirstArr[i] < 0) {
+        if (FirstArr[i] < 0 && firstIndex < 15) {   
             NewFirstArr[firstIndex++] = FirstArr[i];
         }
     }
     for (int i = 0; i < 15; i++) {
-        if (SecondArr[i] < 0) {
+        if (SecondArr[i] < 0 && firstIndex < 15) {   
             NewFirstArr[firstIndex++] = SecondArr[i];
         }
     }
 
     // заполняем положительные числа во второй массив
     for (int i = 0; i < 15; i++) {
-        if (SecondArr[i] > 0) {
+        if (SecondArr[i] > 0 && secondIndex < 15) {  
             NewSecondArr[secondIndex++] = SecondArr[i];
         }
     }
     for (int i = 0; i < 15; i++) {
-        if (FirstArr[i] > 0) {
+        if (FirstArr[i] > 0 && secondIndex < 15) {  
             NewSecondArr[secondIndex++] = FirstArr[i];
         }
     }
+
 
     // вывод результатов
     if (isHuman) {
         cout << "Первый массив: ";
         for (int i = 0; i < 15; ++i) {
+            if (FirstArr[i] == -0.0) {
+                FirstArr[i] = 0.0;
+            }
             if (i != 14) {
                 cout << FirstArr[i] << " ";
             }
@@ -129,6 +133,9 @@ int main(int argc, const char* argv[]) {
 
         cout << "Второй массив: ";
         for (int i = 0; i < 15; ++i) {
+            if (SecondArr[i] == -0.0) {
+                SecondArr[i] = 0.0;
+            }
             if (i != 14) {
                 cout << SecondArr[i] << " ";
             }
@@ -181,6 +188,9 @@ int main(int argc, const char* argv[]) {
     }
     else {
         for (int i = 0; i < 15; ++i) {
+            if (FirstArr[i] == -0.0) {
+                FirstArr[i] = 0.0;
+            }
             if (i != 14) {
                 cout << FirstArr[i] << " ";
             }
@@ -191,6 +201,9 @@ int main(int argc, const char* argv[]) {
         cout << endl;
 
         for (int i = 0; i < 15; ++i) {
+            if (SecondArr[i] == -0.0) {
+                SecondArr[i] = 0.0;
+            }
             if (i != 14) {
                 cout << SecondArr[i] << " ";
             }
@@ -237,7 +250,7 @@ int main(int argc, const char* argv[]) {
             }
         }
         cout << endl;
-    }
+    } 
 
     return 0;
 }
