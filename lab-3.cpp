@@ -1,9 +1,9 @@
 #include <iostream>  
-#include <cmath>       
-#include <algorithm>   
-#include <cstring>    
+#include <cmath>         
 
 using namespace std;
+
+constexpr size_t capacity = 15;
 
 double Function(double x, double a, double b, double c) {
     if (x < 0 && b != 0) {
@@ -16,6 +16,18 @@ double Function(double x, double a, double b, double c) {
         return x / c;
     }
 } 
+
+void PrintArray(const double* array_ptr, const size_t length) {
+    
+    for (size_t i = 0; i < length; ++i) {
+        if (i == length - 1) {
+            std::cout << array_ptr[i] << std::endl;
+        }
+        else {
+            std::cout << array_ptr[i] << " ";
+        }
+    }
+}
 
 int main(int argc, const char* argv[]) {
     setlocale(LC_ALL, "RUS");
@@ -33,10 +45,11 @@ int main(int argc, const char* argv[]) {
     double x1, x2, a, b, c;
     cin >> x1 >> x2 >> a >> b >> c;
 
-    double step = (x2 - x1) / 14;
-    double FirstArr[15], SecondArr[15];
+    double step = (x2 - x1) / (capacity - 1);
+    double FirstArr[capacity] = { 0 };
+    double SecondArr[capacity] = { 0 };
 
-    for (int i = 0, j = 14; i < 15; i++, j--) {
+    for (int i = 0, j = capacity - 1; i < capacity; i++, j--) {
         double X = x1 + i * step;
         FirstArr[i] = Function(X, a, b, c);
         SecondArr[j] = Function(-X, a, b, c);
@@ -56,22 +69,42 @@ int main(int argc, const char* argv[]) {
     double mn_2 = min({ FirstArr[5], FirstArr[6], FirstArr[7], FirstArr[8], FirstArr[9] });
     double mn_3 = min({ FirstArr[10], FirstArr[11], FirstArr[12], FirstArr[13], FirstArr[14] });
 
-    double SortArr[15];
-    copy(begin(FirstArr), end(FirstArr), begin(SortArr));
-    sort(begin(SortArr), end(SortArr));
+    // Объявляем и инициализируем массив нулями, который будет содержать отсортированные данные
+    double SortArr[capacity] = { 0 };
+    
+    // производим копирование из массива FirstArr в SortArr
+    // но здесь мы только провели копирование, то есть, сейчас SortArr всё также неотсортирован
+    for (size_t i = 0; i < capacity; ++i) {
+        SortArr[i] = FirstArr[i];
+    }
 
-    int Replay = 0;
-    for (int i = 1; i < 15; i++) {
+    // Сортировка выбором
+    for (size_t i = 0; i < capacity - 1; ++i) { 
+        
+        for (size_t j = i + 1; j < capacity; ++j) {
+            if (SortArr[j] == -0.0) {
+                SortArr[j] = 0.0;
+            }
+            if (SortArr[i] > SortArr[j]) {
+                // std::swap «обменивает» значения двух объектов
+                std::swap(SortArr[i], SortArr[j]);
+            }
+        }
+    }
+
+    // количество повторений
+    size_t Replay = 0;
+    for (size_t i = 1; i < capacity; ++i) {
         if (SortArr[i] == SortArr[i - 1]) {
-            Replay++;
+            ++Replay;
         }
     }
 
     int two = -1;
-    for (int i = 0; i < 15; i++) {
+    for (size_t i = 0; i < capacity; ++i) {
         bool isPowerOfTwo = true;
         int expectedPower = 1;
-        for (int j = i; j < 15; j++) {
+        for (size_t j = i; j < capacity; ++j) {
             if (FirstArr[j] != expectedPower) {
                 isPowerOfTwo = false;
                 break;
@@ -84,172 +117,91 @@ int main(int argc, const char* argv[]) {
         }
     }
 
-    double NewFirstArr[15] = { 0 };
-    double NewSecondArr[15] = { 0 };
+    // обрабатываем все массивы, в которых потенциально может содержаться -0
+    // заменяем все -0 на обычные нули
+    for (size_t i = 0; i < capacity; ++i) {
+        if (FirstArr[i] == -0.0) {
+            FirstArr[i] = 0.0;
+        }
+        if (SecondArr[i] == -0.0) {
+            SecondArr[i] = 0.0;
+        }
+        if (SortArr[i] == -0.0) {
+            SortArr[i] = 0.0;
+        }
+    }
+
+    double NewFirstArr[capacity] = { 0 };
+    double NewSecondArr[capacity] = { 0 };
 
     // перераспределение элементов 
     int firstIndex = 0, secondIndex = 0;
 
     // заполняем отрицательные числа в первый массив
-    for (int i = 0; i < 15; i++) {
-        if (FirstArr[i] < 0 && firstIndex < 15) {   
+    for (size_t i = 0; i < capacity; i++) {
+        if (FirstArr[i] < 0 && firstIndex < capacity) {   
             NewFirstArr[firstIndex++] = FirstArr[i];
         }
     }
-    for (int i = 0; i < 15; i++) {
-        if (SecondArr[i] < 0 && firstIndex < 15) {   
+    for (size_t i = 0; i < capacity; i++) {
+        if (SecondArr[i] < 0 && firstIndex < capacity) {   
             NewFirstArr[firstIndex++] = SecondArr[i];
         }
     }
 
     // заполняем положительные числа во второй массив
-    for (int i = 0; i < 15; i++) {
-        if (SecondArr[i] > 0 && secondIndex < 15) {  
+    for (size_t i = 0; i < capacity; i++) {
+        if (SecondArr[i] > 0 && secondIndex < capacity) {  
             NewSecondArr[secondIndex++] = SecondArr[i];
         }
     }
-    for (int i = 0; i < 15; i++) {
-        if (FirstArr[i] > 0 && secondIndex < 15) {  
+    for (size_t i = 0; i < capacity; i++) {
+        if (FirstArr[i] > 0 && secondIndex < capacity) {  
             NewSecondArr[secondIndex++] = FirstArr[i];
         }
     }
 
-
     // вывод результатов
     if (isHuman) {
         cout << "Первый массив: ";
-        for (int i = 0; i < 15; ++i) {
-            if (FirstArr[i] == -0.0) {
-                FirstArr[i] = 0.0;
-            }
-            if (i != 14) {
-                cout << FirstArr[i] << " ";
-            }
-            else {
-                cout << FirstArr[i];
-            }
-        }
-        cout << endl;
-
+        PrintArray(FirstArr, capacity);
+            
         cout << "Второй массив: ";
-        for (int i = 0; i < 15; ++i) {
-            if (SecondArr[i] == -0.0) {
-                SecondArr[i] = 0.0;
-            }
-            if (i != 14) {
-                cout << SecondArr[i] << " ";
-            }
-            else {
-                cout << SecondArr[i];
-            }
-        }
-        cout << endl;
+        PrintArray(SecondArr, capacity);
 
         cout << mn_1 << endl;
         cout << mn_2 << endl;
         cout << mn_3 << endl;
 
         cout << "Сортировка: ";
-        for (int i = 0; i < 15; ++i) {
-            if (i != 14) {
-                cout << SortArr[i] << " ";
-            }
-            else {
-                cout << SortArr[i];
-            }
-        }
-        cout << endl;
-
+        PrintArray(SortArr, capacity);
+        
         cout << "Повторы: " << Replay << endl;
-
         cout << "Степень 2: " << two << endl;
 
         cout << "Перераспределение 1 массива: ";
-        for (int i = 0; i < 15; ++i) {
-            if (i != 14) {
-                cout << NewFirstArr[i] << " ";
-            }
-            else {
-                cout << NewFirstArr[i];
-            }
-        }
-        cout << endl;
+        PrintArray(NewFirstArr, capacity);
 
         cout << "Перераспределение 2 массива: ";
-        for (int i = 0; i < 15; ++i) {
-            if (i != 14) {
-                cout << NewSecondArr[i] << " ";
-            }
-            else {
-                cout << NewSecondArr[i];
-            }
-        }
-        cout << endl;
+        PrintArray(NewSecondArr, capacity);
     }
-    else {
-        for (int i = 0; i < 15; ++i) {
-            if (FirstArr[i] == -0.0) {
-                FirstArr[i] = 0.0;
-            }
-            if (i != 14) {
-                cout << FirstArr[i] << " ";
-            }
-            else {
-                cout << FirstArr[i];
-            }
-        }
-        cout << endl;
-
-        for (int i = 0; i < 15; ++i) {
-            if (SecondArr[i] == -0.0) {
-                SecondArr[i] = 0.0;
-            }
-            if (i != 14) {
-                cout << SecondArr[i] << " ";
-            }
-            else {
-                cout << SecondArr[i];
-            }
-        }
-        cout << endl;
+    else { 
+        PrintArray(FirstArr, capacity); 
+        PrintArray(SecondArr, capacity);
 
         cout << mn_1 << endl;
         cout << mn_2 << endl;
-        cout << mn_3 << endl;
-
-        for (int i = 0; i < 15; ++i) {
-            if (i != 14) {
-                cout << SortArr[i] << " ";
-            }
-            else {
-                cout << SortArr[i];
-            }
-        }
-        cout << endl;
+        cout << mn_3 << endl; 
+        
+        // вывод сортировки
+        PrintArray(SortArr, capacity);
 
         cout << Replay << endl;
-
         cout << two << endl;
-
-        for (int i = 0; i < 15; ++i) {
-            if (i != 14) {
-                cout << NewFirstArr[i] << " ";
-            }
-            else {
-                cout << NewFirstArr[i];
-            }
-        }
-        cout << endl;
-
-        for (int i = 0; i < 15; ++i) {
-            if (i != 14) {
-                cout << NewSecondArr[i] << " ";
-            }
-            else {
-                cout << NewSecondArr[i];
-            }
-        }
-        cout << endl;
+        
+        // вывод перераспределения
+        PrintArray(NewFirstArr, capacity); 
+        PrintArray(NewSecondArr, capacity);
     } 
 
     return 0;
