@@ -1,5 +1,5 @@
 #include <iostream>  
-#include <cmath>         
+#include <cmath>     
 
 using namespace std;
 
@@ -15,10 +15,9 @@ double Function(double x, double a, double b, double c) {
     else {
         return x / c;
     }
-} 
+}
 
 void PrintArray(const double* array_ptr, const size_t length) {
-    
     for (size_t i = 0; i < length; ++i) {
         if (i == length - 1) {
             std::cout << array_ptr[i] << std::endl;
@@ -69,34 +68,42 @@ int main(int argc, const char* argv[]) {
     double mn_2 = min({ FirstArr[5], FirstArr[6], FirstArr[7], FirstArr[8], FirstArr[9] });
     double mn_3 = min({ FirstArr[10], FirstArr[11], FirstArr[12], FirstArr[13], FirstArr[14] });
 
-    // Объявляем и инициализируем массив нулями, который будет содержать отсортированные данные
     double SortArr[capacity] = { 0 };
-    
-    // производим копирование из массива FirstArr в SortArr
-    // но здесь мы только провели копирование, то есть, сейчас SortArr всё также неотсортирован
     for (size_t i = 0; i < capacity; ++i) {
         SortArr[i] = FirstArr[i];
     }
 
     // Сортировка выбором
-    for (size_t i = 0; i < capacity - 1; ++i) { 
-        
+    for (size_t i = 0; i < capacity - 1; ++i) {
+
         for (size_t j = i + 1; j < capacity; ++j) {
             if (SortArr[j] == -0.0) {
                 SortArr[j] = 0.0;
             }
             if (SortArr[i] > SortArr[j]) {
-                // std::swap «обменивает» значения двух объектов
                 std::swap(SortArr[i], SortArr[j]);
             }
         }
     }
 
-    // количество повторений
     size_t Replay = 0;
-    for (size_t i = 1; i < capacity; ++i) {
-        if (SortArr[i] == SortArr[i - 1]) {
-            ++Replay;
+    bool counted[capacity] = { false };
+
+    for (int i = 0; i < capacity; i++) {
+        if (counted[i]) {
+            continue;
+        }
+
+        size_t count = 1; 
+        for (int j = i + 1; j < capacity; j++) {
+            if (FirstArr[i] == FirstArr[j]) {
+                count++; 
+                counted[j] = true; 
+            }
+        }
+
+        if (count > 1) {
+            Replay++;
         }
     }
 
@@ -117,8 +124,6 @@ int main(int argc, const char* argv[]) {
         }
     }
 
-    // обрабатываем все массивы, в которых потенциально может содержаться -0
-    // заменяем все -0 на обычные нули
     for (size_t i = 0; i < capacity; ++i) {
         if (FirstArr[i] == -0.0) {
             FirstArr[i] = 0.0;
@@ -136,36 +141,32 @@ int main(int argc, const char* argv[]) {
 
     // перераспределение элементов 
     int firstIndex = 0, secondIndex = 0;
-
-    // заполняем отрицательные числа в первый массив
     for (size_t i = 0; i < capacity; i++) {
-        if (FirstArr[i] < 0 && firstIndex < capacity) {   
+        if (FirstArr[i] < 0 && firstIndex < capacity) {
             NewFirstArr[firstIndex++] = FirstArr[i];
         }
     }
     for (size_t i = 0; i < capacity; i++) {
-        if (SecondArr[i] < 0 && firstIndex < capacity) {   
+        if (SecondArr[i] < 0 && firstIndex < capacity) {
             NewFirstArr[firstIndex++] = SecondArr[i];
         }
     }
-
-    // заполняем положительные числа во второй массив
+    
     for (size_t i = 0; i < capacity; i++) {
-        if (SecondArr[i] > 0 && secondIndex < capacity) {  
+        if (SecondArr[i] > 0 && secondIndex < capacity) {
             NewSecondArr[secondIndex++] = SecondArr[i];
         }
     }
     for (size_t i = 0; i < capacity; i++) {
-        if (FirstArr[i] > 0 && secondIndex < capacity) {  
+        if (FirstArr[i] > 0 && secondIndex < capacity) {
             NewSecondArr[secondIndex++] = FirstArr[i];
         }
     }
 
-    // вывод результатов
     if (isHuman) {
         cout << "Первый массив: ";
         PrintArray(FirstArr, capacity);
-            
+
         cout << "Второй массив: ";
         PrintArray(SecondArr, capacity);
 
@@ -175,7 +176,7 @@ int main(int argc, const char* argv[]) {
 
         cout << "Сортировка: ";
         PrintArray(SortArr, capacity);
-        
+
         cout << "Повторы: " << Replay << endl;
         cout << "Степень 2: " << two << endl;
 
@@ -185,24 +186,22 @@ int main(int argc, const char* argv[]) {
         cout << "Перераспределение 2 массива: ";
         PrintArray(NewSecondArr, capacity);
     }
-    else { 
-        PrintArray(FirstArr, capacity); 
+    else {
+        PrintArray(FirstArr, capacity);
         PrintArray(SecondArr, capacity);
 
         cout << mn_1 << endl;
         cout << mn_2 << endl;
-        cout << mn_3 << endl; 
-        
-        // вывод сортировки
+        cout << mn_3 << endl;
+
         PrintArray(SortArr, capacity);
 
         cout << Replay << endl;
         cout << two << endl;
-        
-        // вывод перераспределения
-        PrintArray(NewFirstArr, capacity); 
+
+        PrintArray(NewFirstArr, capacity);
         PrintArray(NewSecondArr, capacity);
-    } 
+    }
 
     return 0;
 }
