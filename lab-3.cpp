@@ -4,6 +4,7 @@
 using namespace std;
 
 constexpr size_t capacity = 15;
+inline const double EPSILON = 1e-6;
 
 double Function(double x, double a, double b, double c) {
     if (x < 0 && b != 0) {
@@ -45,8 +46,8 @@ int main(int argc, const char* argv[]) {
     cin >> x1 >> x2 >> a >> b >> c;
 
     double step = (x2 - x1) / (capacity - 1);
-    double FirstArr[capacity] = { 0 };
-    double SecondArr[capacity] = { 0 };
+    double FirstArr[capacity] = { 0.0 };
+    double SecondArr[capacity] = { 0.0 };
 
     for (int i = 0, j = capacity - 1; i < capacity; i++, j--) {
         double X = x1 + i * step;
@@ -55,12 +56,12 @@ int main(int argc, const char* argv[]) {
 
         int A = int(trunc(a)), B = int(trunc(b)), C = int(trunc(c));
         if (((A | B) & (A | C)) == 0) {
-            FirstArr[i] = trunc(FirstArr[i]);
-            SecondArr[j] = trunc(SecondArr[j]);
+            FirstArr[i] = round(FirstArr[i]);
+            SecondArr[j] = round(SecondArr[j]);
         }
         else {
-            FirstArr[i] = round(FirstArr[i] * 100) / 100;
-            SecondArr[j] = round(SecondArr[j] * 100) / 100;
+            FirstArr[i] = round(FirstArr[i] * 100) / 100.;
+            SecondArr[j] = round(SecondArr[j] * 100) / 100.;
         }
     }
 
@@ -68,7 +69,7 @@ int main(int argc, const char* argv[]) {
     double mn_2 = min({ FirstArr[5], FirstArr[6], FirstArr[7], FirstArr[8], FirstArr[9] });
     double mn_3 = min({ FirstArr[10], FirstArr[11], FirstArr[12], FirstArr[13], FirstArr[14] });
 
-    double SortArr[capacity] = { 0 };
+    double SortArr[capacity] = { 0.0 };
     for (size_t i = 0; i < capacity; ++i) {
         SortArr[i] = FirstArr[i];
     }
@@ -77,7 +78,7 @@ int main(int argc, const char* argv[]) {
     for (size_t i = 0; i < capacity - 1; ++i) {
 
         for (size_t j = i + 1; j < capacity; ++j) {
-            if (SortArr[j] == -0.0) {
+            if (signbit(SortArr[j]) {
                 SortArr[j] = 0.0;
             }
             if (SortArr[i] > SortArr[j]) {
@@ -94,11 +95,11 @@ int main(int argc, const char* argv[]) {
             continue;
         }
 
-        size_t count = 1; 
+        size_t count = 1;
         for (int j = i + 1; j < capacity; j++) {
             if (FirstArr[i] == FirstArr[j]) {
-                count++; 
-                counted[j] = true; 
+                count++;
+                counted[j] = true;
             }
         }
 
@@ -108,7 +109,7 @@ int main(int argc, const char* argv[]) {
     }
 
     int two = -1;
-    for (size_t i = 0; i < capacity; ++i) {
+    for (int i = 0; i < capacity; ++i) {
         bool isPowerOfTwo = true;
         int expectedPower = 1;
         for (size_t j = i; j < capacity; ++j) {
@@ -125,41 +126,52 @@ int main(int argc, const char* argv[]) {
     }
 
     for (size_t i = 0; i < capacity; ++i) {
-        if (FirstArr[i] == -0.0) {
+        if (signbit(FirstArr[i])) {
             FirstArr[i] = 0.0;
         }
-        if (SecondArr[i] == -0.0) {
+        if (signbit(SecondArr[i])) {
             SecondArr[i] = 0.0;
         }
-        if (SortArr[i] == -0.0) {
+        if (signbit(SortArr[i])) {
             SortArr[i] = 0.0;
         }
     }
 
-    double NewFirstArr[capacity] = { 0 };
-    double NewSecondArr[capacity] = { 0 };
+    double NewFirstArr[capacity] = { 0.0 };
+    double NewSecondArr[capacity] = { 0.0 };
 
     // перераспределение элементов 
-    int firstIndex = 0, secondIndex = 0;
+    size_t firstIndex = 0, secondIndex = 0;
+    // Заполняем NewFirstArr отрицательными элементами из FirstArr и SecondArr
     for (size_t i = 0; i < capacity; i++) {
-        if (FirstArr[i] < 0 && firstIndex < capacity) {
+        if (FirstArr[i] < EPSILON && firstIndex < capacity) {
             NewFirstArr[firstIndex++] = FirstArr[i];
         }
     }
     for (size_t i = 0; i < capacity; i++) {
-        if (SecondArr[i] < 0 && firstIndex < capacity) {
+        if (SecondArr[i] < EPSILON && firstIndex < capacity) {
             NewFirstArr[firstIndex++] = SecondArr[i];
         }
     }
-    
+    // Заполняем NewSecondArr положительными элементами из SecondArr и FirstArr
     for (size_t i = 0; i < capacity; i++) {
-        if (SecondArr[i] > 0 && secondIndex < capacity) {
+        if (SecondArr[i] >= EPSILON && secondIndex < capacity) {
             NewSecondArr[secondIndex++] = SecondArr[i];
         }
     }
     for (size_t i = 0; i < capacity; i++) {
-        if (FirstArr[i] > 0 && secondIndex < capacity) {
+        if (FirstArr[i] >= EPSILON && secondIndex < capacity) {
             NewSecondArr[secondIndex++] = FirstArr[i];
+        }
+    }
+
+    // Округление элементов в новых массивах
+    for (size_t i = 0; i < capacity; i++) {
+        if (signbit(NewFirstArr[i])) {
+            NewFirstArr[i] = 0.0;
+        }
+        if (signbit(NewSecondArr[i])) {
+            NewSecondArr[i] = 0.0;
         }
     }
 
