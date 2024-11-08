@@ -1,5 +1,6 @@
-#include <iostream>  
-#include <cmath>     
+#include <iostream>
+#include <cmath>
+#include <cstring>
 
 using namespace std;
 
@@ -33,7 +34,6 @@ int main(int argc, const char* argv[]) {
     setlocale(LC_ALL, "RUS");
 
     bool isHuman = true;
-
     if (argc > 1 && strcmp(argv[1], "false") == 0) {
         isHuman = false;
     }
@@ -55,13 +55,17 @@ int main(int argc, const char* argv[]) {
         SecondArr[j] = Function(-X, a, b, c);
 
         int A = int(trunc(a)), B = int(trunc(b)), C = int(trunc(c));
+
+        // Проверка условия для округления
         if (((A | B) & (A | C)) == 0) {
+            // Округление до целого числа
             FirstArr[i] = round(FirstArr[i]);
             SecondArr[j] = round(SecondArr[j]);
         }
         else {
-            FirstArr[i] = round(FirstArr[i] * 100) / 100.;
-            SecondArr[j] = round(SecondArr[j] * 100) / 100.;
+            // Округление до двух знаков после запятой
+            FirstArr[i] = round(FirstArr[i] * 100.0) / 100.0;
+            SecondArr[j] = round(SecondArr[j] * 100.0) / 100.0;
         }
     }
 
@@ -76,11 +80,7 @@ int main(int argc, const char* argv[]) {
 
     // Сортировка выбором
     for (size_t i = 0; i < capacity - 1; ++i) {
-
         for (size_t j = i + 1; j < capacity; ++j) {
-            if (signbit(SortArr[j]) {
-                SortArr[j] = 0.0;
-            }
             if (SortArr[i] > SortArr[j]) {
                 std::swap(SortArr[i], SortArr[j]);
             }
@@ -89,11 +89,8 @@ int main(int argc, const char* argv[]) {
 
     size_t Replay = 0;
     bool counted[capacity] = { false };
-
     for (int i = 0; i < capacity; i++) {
-        if (counted[i]) {
-            continue;
-        }
+        if (counted[i]) continue;
 
         size_t count = 1;
         for (int j = i + 1; j < capacity; j++) {
@@ -102,7 +99,6 @@ int main(int argc, const char* argv[]) {
                 counted[j] = true;
             }
         }
-
         if (count > 1) {
             Replay++;
         }
@@ -125,14 +121,15 @@ int main(int argc, const char* argv[]) {
         }
     }
 
+    // Замена -0.0 на 0.0
     for (size_t i = 0; i < capacity; ++i) {
-        if (signbit(FirstArr[i])) {
+        if (fabs(FirstArr[i]) < EPSILON && FirstArr[i] < 0) {
             FirstArr[i] = 0.0;
         }
-        if (signbit(SecondArr[i])) {
+        if (fabs(SecondArr[i]) < EPSILON && SecondArr[i] < 0) {
             SecondArr[i] = 0.0;
         }
-        if (signbit(SortArr[i])) {
+        if (fabs(SortArr[i]) < EPSILON && SortArr[i] < 0) {
             SortArr[i] = 0.0;
         }
     }
@@ -140,20 +137,17 @@ int main(int argc, const char* argv[]) {
     double NewFirstArr[capacity] = { 0.0 };
     double NewSecondArr[capacity] = { 0.0 };
 
-    // перераспределение элементов 
     size_t firstIndex = 0, secondIndex = 0;
-    // Заполняем NewFirstArr отрицательными элементами из FirstArr и SecondArr
     for (size_t i = 0; i < capacity; i++) {
-        if (FirstArr[i] < EPSILON && firstIndex < capacity) {
+        if (FirstArr[i] < -EPSILON && firstIndex < capacity) {
             NewFirstArr[firstIndex++] = FirstArr[i];
         }
     }
     for (size_t i = 0; i < capacity; i++) {
-        if (SecondArr[i] < EPSILON && firstIndex < capacity) {
+        if (SecondArr[i] < -EPSILON && firstIndex < capacity) {
             NewFirstArr[firstIndex++] = SecondArr[i];
         }
     }
-    // Заполняем NewSecondArr положительными элементами из SecondArr и FirstArr
     for (size_t i = 0; i < capacity; i++) {
         if (SecondArr[i] >= EPSILON && secondIndex < capacity) {
             NewSecondArr[secondIndex++] = SecondArr[i];
@@ -162,16 +156,6 @@ int main(int argc, const char* argv[]) {
     for (size_t i = 0; i < capacity; i++) {
         if (FirstArr[i] >= EPSILON && secondIndex < capacity) {
             NewSecondArr[secondIndex++] = FirstArr[i];
-        }
-    }
-
-    // Округление элементов в новых массивах
-    for (size_t i = 0; i < capacity; i++) {
-        if (signbit(NewFirstArr[i])) {
-            NewFirstArr[i] = 0.0;
-        }
-        if (signbit(NewSecondArr[i])) {
-            NewSecondArr[i] = 0.0;
         }
     }
 
@@ -201,16 +185,12 @@ int main(int argc, const char* argv[]) {
     else {
         PrintArray(FirstArr, capacity);
         PrintArray(SecondArr, capacity);
-
         cout << mn_1 << endl;
         cout << mn_2 << endl;
         cout << mn_3 << endl;
-
         PrintArray(SortArr, capacity);
-
         cout << Replay << endl;
         cout << two << endl;
-
         PrintArray(NewFirstArr, capacity);
         PrintArray(NewSecondArr, capacity);
     }
