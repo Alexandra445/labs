@@ -5,7 +5,7 @@
 using namespace std;
 
 constexpr size_t capacity = 15;
-inline const double EPSILON = 1e-6;
+const double EPSILON = 1e-6;
 
 double Function(double x, double a, double b, double c) {
     if (x < 0 && b != 0) {
@@ -122,14 +122,15 @@ int main(int argc, const char* argv[]) {
     }
 
     // Замена -0.0 на 0.0
+
     for (size_t i = 0; i < capacity; ++i) {
-        if (fabs(FirstArr[i]) < EPSILON && FirstArr[i] < 0) {
+        if (FirstArr[i] == 0.0 && signbit(FirstArr[i])) {
             FirstArr[i] = 0.0;
         }
-        if (fabs(SecondArr[i]) < EPSILON && SecondArr[i] < 0) {
+        if (SecondArr[i] == 0.0 && signbit(SecondArr[i])) {
             SecondArr[i] = 0.0;
         }
-        if (fabs(SortArr[i]) < EPSILON && SortArr[i] < 0) {
+        if (SortArr[i] == 0.0 && signbit(SortArr[i])) {
             SortArr[i] = 0.0;
         }
     }
