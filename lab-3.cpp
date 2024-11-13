@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <cstring>
+#include <cassert>  
 
 using namespace std;
 
@@ -28,6 +29,10 @@ void PrintArray(const double* array_ptr, const size_t length) {
             std::cout << array_ptr[i] << " ";
         }
     }
+}
+
+bool IsPowerOfTwo(double n) {
+    return n > 0 && std::fmod(n, 1) == 0 && (std::log2(n) == std::floor(std::log2(n)));
 }
 
 int main(int argc, const char* argv[]) {
@@ -105,19 +110,21 @@ int main(int argc, const char* argv[]) {
     }
 
     int two = -1;
-    for (int i = 0; i < capacity; ++i) {
-        bool isPowerOfTwo = true;
-        int expectedPower = 1;
-        for (size_t j = i; j < capacity; ++j) {
-            if (FirstArr[j] != expectedPower) {
-                isPowerOfTwo = false;
+    for (size_t i = 0; i < capacity; ++i) {
+        if (IsPowerOfTwo(FirstArr[i])) {
+            size_t j = i;
+
+            double last_num = FirstArr[i];
+
+            while (j < capacity && IsPowerOfTwo(last_num) && FirstArr[j] >= last_num && IsPowerOfTwo(FirstArr[j])) {
+                last_num = FirstArr[j];
+                ++j;
+            }
+
+            if (j == capacity) {
+                two = i;
                 break;
             }
-            expectedPower *= 2;
-        }
-        if (isPowerOfTwo) {
-            two = i;
-            break;
         }
     }
 
