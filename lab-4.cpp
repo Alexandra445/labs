@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <cmath>
 
 using namespace std;
@@ -6,19 +6,26 @@ using namespace std;
 int N, M;
 int K;
 
-void PrintMatrix(int64_t** A1, size_t n, size_t m) {
+template <typename T>
+void PrintMatrix(T** A1, size_t n, size_t m) {
 	for (size_t i = 0; i < n; ++i) {
 		for (size_t j = 0; j < m; ++j) {
-			cout << A1[i][j] << "\t";
+			if (j != m) {
+				cout << A1[i][j] << " ";
+			}
+			else {
+				cout << A1[i][j];
+			}
 		}
 		cout << std::endl;
 	}
 }
 
-void MultiplyMatrix(int64_t** a, int64_t** b, int64_t** result, int exp, size_t n, size_t m) {
+template <typename T>
+void MultiplyMatrix(T** a, int64_t** b, int64_t** result, int exp, size_t n, size_t m) {
 	for (size_t i = 0; i < n; ++i) {
 		for (size_t j = 0; j < n; ++j) {
-			int64_t sum = 0;
+			T sum = 0;
 			for (size_t k = 0; k < m; ++k) {
 				sum += a[i][k] * b[k][j];
 			}
@@ -48,7 +55,7 @@ int main(int argc, const char* argv[]) {
 
 	cin >> M;
 
-	int64_t** A1 = new int64_t * [N]; //переменная хранит указатель на указатель
+	int64_t** A1 = new int64_t * [N]; // A1 хранит указатели на массивы целых чисел типа int64t
 	for (int i = 0; i < N; i++) {
 		A1[i] = new int64_t[M];
 	}
@@ -58,7 +65,6 @@ int main(int argc, const char* argv[]) {
 	}
 
 	for (int i = 0; i < N; i++) {
-
 		for (int j = 0; j < M; j++) {
 			cin >> A1[i][j];
 		}
@@ -81,57 +87,29 @@ int main(int argc, const char* argv[]) {
 		else if (vubor == 1) {
 			if (isHuman) {
 				cout << "Матрица A1:" << endl;
-				for (int i = 0; i < N; i++) {
-					for (int j = 0; j < M; j++) {
-
-						cout << A1[i][j] << " ";
-					}
-					cout << endl;
-				}
+				PrintMatrix(A1, N, M);
 			}
 			else {
-				cout << "Матрица A1:" << endl;
-				for (int i = 0; i < N; i++) {
-					for (int j = 0; j < M; j++) {
-
-						cout << A1[i][j] << " ";
-					}
-					cout << endl;
-				}
+				PrintMatrix(A1, N, M);
 			}
 		}
 
 		else if (vubor == 2) {
-
 			if (isHuman) {
 				cout << "Введите K (число столбцов): " << endl;
 			}
-
 			cin >> K;
 
 			double** A2 = new double* [M];
-
 			for (int i = 0; i < M; i++) {
 				A2[i] = new double[K];
 			}
-
 			if (isHuman) {
 				cout << "Введите элементы матрицы A2 построчно: " << endl;
 			}
-
 			for (int i = 0; i < M; i++) {
 				for (int j = 0; j < K; j++) {
 					cin >> A2[i][j];
-				}
-			}
-
-			if (isHuman) {
-				cout << "Матрица A2:" << endl;
-				for (int i = 0; i < M; i++) {
-					for (int j = 0; j < K; j++) {
-						cout << A2[i][j] << " ";
-					}
-					cout << endl;
 				}
 			}
 
@@ -145,7 +123,6 @@ int main(int argc, const char* argv[]) {
 					}
 				}
 			}
-
 			for (int i = 0; i < N; i++) {
 				delete[] A1[i];
 				A1[i] = new int64_t[K];
@@ -155,26 +132,14 @@ int main(int argc, const char* argv[]) {
 			}
 
 			M = K;
-
 			for (int i = 0; i < N; i++) {
 				delete[] result[i];
 			}
 			delete[] result;
-
 			for (int i = 0; i < M; i++) {
 				delete[] A2[i];
 			}
 			delete[] A2;
-
-			if (isHuman) {
-				cout << "Матрица A1 после умножения: " << endl;
-			}
-			for (int i = 0; i < N; i++) {
-				for (int j = 0; j < K; j++) {
-					cout << A1[i][j] << " ";
-				}
-				cout << endl;
-			}
 		}
 
 		else if (vubor == 3) {
@@ -229,11 +194,6 @@ int main(int argc, const char* argv[]) {
 						delete[] temp[i];
 					}
 					delete[] temp;
-
-					if (isHuman) {
-						cout << "Матрица A1 после возведения в степень: " << endl;
-					}
-					PrintMatrix(A1, N, N);
 
 					M = N;
 				}
