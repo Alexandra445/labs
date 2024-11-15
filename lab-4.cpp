@@ -10,7 +10,7 @@ template <typename T>
 void PrintMatrix(T** A1, size_t n, size_t m) {
 	for (size_t i = 0; i < n; ++i) {
 		for (size_t j = 0; j < m; ++j) {
-			if (j != m) {
+			if (j != m - 1) {
 				cout << A1[i][j] << " ";
 			}
 			else {
