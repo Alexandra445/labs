@@ -1,6 +1,6 @@
-#include <iostream>  
-#include <cmath>  
-#include <cstring> 
+#include <iostream>   
+#include <cmath>   
+#include <cstring>  
 
 using namespace std;
 
@@ -27,7 +27,16 @@ T** AllocateMatrix(size_t rows, size_t cols, bool initialize = true, T initialVa
     }
     return matrix;
 }
- 
+
+template <typename T>
+T** CreateIdentityMatrix(size_t size) {
+    T** matrix = AllocateMatrix<T>(size, size, true, 0);
+    for (size_t i = 0; i < size; ++i) {
+        matrix[i][i] = 1;
+    }
+    return matrix;
+}
+
 template <typename T>
 void FreeMatrix(T** matrix, size_t rows) {
     for (size_t i = 0; i < rows; ++i) {
@@ -38,7 +47,7 @@ void FreeMatrix(T** matrix, size_t rows) {
 
 template <typename T>
 T** GetMatrix(size_t rows, size_t cols, bool isHuman) {
-    T** matrix = AllocateMatrix<T>(rows, cols);
+    T** matrix = AllocateMatrix<T>(rows, cols, false);
     if (isHuman) {
         cout << "Введите элементы матрицы построчно:" << endl;
     }
@@ -62,37 +71,29 @@ T** MultiplyMatrices(T** a, U** b, size_t aRows, size_t aCols, size_t bCols) {
     }
     return result;
 }
- 
+
 template <typename T>
 T** MatrixPower(T** matrix, int exponent, size_t size) {
     if (exponent < 0) {
         throw runtime_error("Показатель степени должен быть неотрицательным.");
     }
     if (exponent == 0) {
-        return AllocateMatrix<T>(size, size, true, (T)(size == 0 ? 0 : (size_t)(size_t)1));
+        return CreateIdentityMatrix<T>(size);
     }
-    if (exponent == 1) {
-
-        T** result = AllocateMatrix<T>(size, size);
-        for (size_t i = 0; i < size; ++i) {
-            for (size_t j = 0; j < size; ++j) {
-                result[i][j] = matrix[i][j];
-            }
+    T** result = CreateIdentityMatrix<T>(size);
+    T** temp = matrix;
+    while (exponent > 0) {
+        if (exponent % 2 == 1) {
+            T** newResult = MultiplyMatrices(result, temp, size, size, size);
+            FreeMatrix(result, size);
+            result = newResult;
         }
-        return result;
-    }
-
-    T** result = MatrixPower(matrix, exponent / 2, size);
-    T** temp = MultiplyMatrices(result, result, size, size, size);
-    FreeMatrix(result, size);
-    if (exponent % 2 != 0) {
-        T** temp2 = MultiplyMatrices(temp, matrix, size, size, size);
+        T** newTemp = MultiplyMatrices(temp, temp, size, size, size);
         FreeMatrix(temp, size);
-        return temp2;
+        temp = newTemp;
+        exponent /= 2;
     }
-    else {
-        return temp;
-    }
+    return result;
 }
 
 int main(int argc, const char* argv[]) {
@@ -148,7 +149,6 @@ int main(int argc, const char* argv[]) {
                 cin >> x;
                 try {
                     int64_t** result = MatrixPower(a1, x, n);
-                    FreeMatrix(a1, n);
                     a1 = result;
                 }
                 catch (const runtime_error& error) {
