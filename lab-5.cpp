@@ -50,10 +50,42 @@ void stableSortByAverageGrade(STUDENT* students, int n) {
     }
 }
 
+void printTable(STUDENT* students, int n) {
+    const int nameWidth = 20;
+    const int groupWidth = 10;
+    const int gradeWidth = 20;
+    const int avgWidth = 10;
+
+    cout << setw(groupWidth) << "Группа" << "|"
+         << setw(nameWidth) << "Имя" << "|"
+         << setw(gradeWidth) << "Оценки" << "|"
+         << setw(avgWidth) << "Сред." << endl;
+    cout << string(groupWidth, '_') << "|"
+         << string(nameWidth, '_') << "|"
+         << string(gradeWidth, '_') << "|"
+         << string(avgWidth, '_') << endl;
+
+    for (int i = 0; i < n; ++i) {
+        cout << setw(groupWidth) << students[i].groupNumber << "|"
+             << setw(nameWidth) << students[i].name << "|";
+
+        string grades;
+        for (int j = 0; j < 5; ++j) {
+            grades += to_string(students[i].grades[j]);
+            if (j < 4) grades += ", ";
+        }
+        cout << setw(gradeWidth) << grades << "|";
+        
+        float avg = students[i].averageGrade();
+        cout << setw(avgWidth) << fixed << setprecision(1) << avg << endl;
+    }
+}
+
 int main(int argc, char* argv[]) {
     SetConsoleOutputCP(1251);
     SetConsoleCP(1251);
     setlocale(LC_ALL, "");
+
     bool isHuman = false;
     if (argc <= 1 || strcmp(argv[1], "false") != 0) {
         isHuman = true;
@@ -89,15 +121,8 @@ int main(int argc, char* argv[]) {
     }
 
     stableSortByGroup(students, N);
-
-    for (int i = 0; i < N; ++i) {
-        cout << students[i].groupNumber << " - " << students[i].name << ": ";
-        for (int j = 0; j < 5; ++j) {
-            cout << students[i].grades[j];
-            if (j < 4) cout << ", ";
-        }
-        cout << endl;
-    }
+    cout << "Полный список студентов:" << endl;
+    printTable(students, N);
 
     STUDENT* filteredStudents = new STUDENT[N];
     int M = 0;
@@ -110,22 +135,13 @@ int main(int argc, char* argv[]) {
     stableSortByAverageGrade(filteredStudents, M);
 
     if (M > 0) {
-        for (int i = 0; i < M; ++i) {
-            float avg = filteredStudents[i].averageGrade();
-            cout << filteredStudents[i].groupNumber << ", "
-                << filteredStudents[i].name << " - ";
-            if (avg == static_cast<int>(avg)) {
-                cout << static_cast<int>(avg) << endl;
-            }
-            else {
-                cout << fixed << setprecision(1) << avg << endl;
-            }
-        }
-    }
-    else {
-        cout << "NO" << endl;
+        cout << endl << "Студенты со средним баллом > 4.0:" << endl;
+        printTable(filteredStudents, M);
+    } else {
+        cout << "Нет студентов со средним баллом > 4.0" << endl;
     }
 
+    cout << endl << "Сводка по группам:" << endl;
     for (int i = 0; i < N; ) {
         string currentGroup = students[i].groupNumber;
         int count = 0;
@@ -137,7 +153,8 @@ int main(int argc, char* argv[]) {
             }
             i++;
         }
-        cout << currentGroup << " - " << count << " - " << badCount << endl;
+        cout << "Группа " << currentGroup << ": всего студентов - " 
+             << count << ", с плохими оценками - " << badCount << endl;
     }
 
     delete[] students;
