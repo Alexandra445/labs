@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <iomanip>
 #include <string>
 #include <locale.h>
@@ -64,14 +64,14 @@ int main(int argc, char* argv[]) {
         cout << "Укажите количество студентов: ";
     }
     cin >> N;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     STUDENT* students = new STUDENT[N];
     for (int i = 0; i < N; ++i) {
         if (isHuman) {
             cout << "Введите ФИО: ";
         }
-        getline(cin, students[i].name); 
+        getline(cin, students[i].name);
 
         if (isHuman) {
             cout << "Введите номер группы: ";
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
             cin >> students[i].grades[j];
         }
 
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
     stableSortByGroup(students, N);
@@ -111,10 +111,15 @@ int main(int argc, char* argv[]) {
 
     if (M > 0) {
         for (int i = 0; i < M; ++i) {
+            float avg = filteredStudents[i].averageGrade();
             cout << filteredStudents[i].groupNumber << ", "
-                << filteredStudents[i].name << " - "
-                << fixed << setprecision(1)
-                << filteredStudents[i].averageGrade() << endl;
+                << filteredStudents[i].name << " - ";
+            if (avg == static_cast<int>(avg)) {
+                cout << static_cast<int>(avg) << endl;
+            }
+            else {
+                cout << fixed << setprecision(1) << avg << endl;
+            }
         }
     }
     else {
@@ -136,6 +141,6 @@ int main(int argc, char* argv[]) {
     }
 
     delete[] students;
-    delete[] filteredStudents; 
+    delete[] filteredStudents;
     return 0;
 }
