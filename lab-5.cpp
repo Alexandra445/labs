@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <string>
 #include <limits>
+#include <algorithm>
 #define NOMINMAX
 #include <Windows.h>
 
@@ -11,18 +12,26 @@ struct STUDENT {
     string name;
     string groupNumber;
     int grades[5];
+
     float averageGrade() const {
         int sum = 0;
         for (int i = 0; i < 5; ++i)
             sum += grades[i];
         return static_cast<float>(sum) / 5;
     }
+
     bool hasBadGrades() const {
         for (int i = 0; i < 5; ++i)
             if (grades[i] == 2)
                 return true;
         return false;
     }
+};
+
+struct GroupSummary {
+    string groupNumber;
+    int studentCount;
+    int badGradeCount;
 };
 
 void stableSortByGroup(STUDENT* students, int n) {
@@ -49,23 +58,20 @@ void stableSortByAverageGrade(STUDENT* students, int n) {
     }
 }
 
-void printTable(STUDENT* students, int n) {
-    const int nameWidth = 20;
-    const int groupWidth = 10;
-    const int gradeWidth = 20;
-    const int avgWidth = 10;
+void printStudentTable(const STUDENT* students, int n) {
+    const int groupWidth = 15;
+    const int nameWidth = 30;
+    const int gradesWidth = 20;
 
-    cout << setw(groupWidth) << "Группа" << "|"
+    cout << left << setw(groupWidth) << "Группа" << "|"
         << setw(nameWidth) << "Имя" << "|"
-        << setw(gradeWidth) << "Оценки" << "|"
-        << setw(avgWidth) << "Сред." << endl;
-    cout << string(groupWidth, '_') << "|"
-        << string(nameWidth, '_') << "|"
-        << string(gradeWidth, '_') << "|"
-        << string(avgWidth, '_') << endl;
+        << setw(gradesWidth) << "Оценки" << endl;
+    cout << string(groupWidth, '-') << "+"
+        << string(nameWidth, '-') << "+"
+        << string(gradesWidth, '-') << endl;
 
     for (int i = 0; i < n; ++i) {
-        cout << setw(groupWidth) << students[i].groupNumber << "|"
+        cout << left << setw(groupWidth) << students[i].groupNumber << "|"
             << setw(nameWidth) << students[i].name << "|";
 
         string grades;
@@ -73,15 +79,48 @@ void printTable(STUDENT* students, int n) {
             grades += to_string(students[i].grades[j]);
             if (j < 4) grades += ", ";
         }
-        cout << setw(gradeWidth) << grades << "|";
+        cout << setw(gradesWidth) << grades << endl;
+    }
+}
 
+void printHighAverageStudents(const STUDENT* students, int n) {
+    const int groupWidth = 15;
+    const int nameWidth = 30;
+    const int avgWidth = 15;
+
+    cout << left << setw(groupWidth) << "Группа" << "|"
+        << setw(nameWidth) << "Имя" << "|"
+        << setw(avgWidth) << "Средний балл" << endl;
+    cout << string(groupWidth, '-') << "+"
+        << string(nameWidth, '-') << "+"
+        << string(avgWidth, '-') << endl;
+
+    for (int i = 0; i < n; ++i) {
         float avg = students[i].averageGrade();
-        if (avg == static_cast<int>(avg)) {
-            cout << setw(avgWidth) << static_cast<int>(avg) << endl;
-        }
-        else {
-            cout << setw(avgWidth) << fixed << setprecision(1) << avg << endl;
-        }
+        cout << left << setw(groupWidth) << students[i].groupNumber << "|"
+            << setw(nameWidth) << students[i].name << "|"
+            << setw(avgWidth)
+            << defaultfloat << setprecision(2)
+            << avg << endl;
+    }
+}
+
+void printGroupSummaryTable(const GroupSummary* summaries, int count) {
+    const int groupWidth = 15;
+    const int totalWidth = 20;
+    const int badGradeWidth = 25;
+
+    cout << left << setw(groupWidth) << "Группа" << "|"
+        << setw(totalWidth) << "Всего студентов" << "|"
+        << setw(badGradeWidth) << "С плохими оценками" << endl;
+    cout << string(groupWidth, '-') << "+"
+        << string(totalWidth, '-') << "+"
+        << string(badGradeWidth, '-') << endl;
+
+    for (int i = 0; i < count; ++i) {
+        cout << left << setw(groupWidth) << summaries[i].groupNumber << "|"
+            << setw(totalWidth) << summaries[i].studentCount << "|"
+            << setw(badGradeWidth) << summaries[i].badGradeCount << endl;
     }
 }
 
@@ -117,6 +156,7 @@ int main(int argc, char* argv[]) {
         if (isHuman) {
             cout << "Введите 5 оценок через пробел: ";
         }
+
         for (int j = 0; j < 5; ++j) {
             cin >> students[i].grades[j];
         }
@@ -125,8 +165,8 @@ int main(int argc, char* argv[]) {
     }
 
     stableSortByGroup(students, N);
-    if (isHuman) cout << "Полный список студентов:" << endl;
-    printTable(students, N);
+    if (isHuman) cout << "Полный список студентов по возрастанию номера группы:" << endl;
+    printStudentTable(students, N);
 
     STUDENT* filteredStudents = new STUDENT[N];
     int M = 0;
@@ -139,32 +179,39 @@ int main(int argc, char* argv[]) {
     stableSortByAverageGrade(filteredStudents, M);
 
     if (M > 0) {
-        if (isHuman) cout << endl << "Студенты со средним баллом > 4.0:" << endl;
-        printTable(filteredStudents, M);
+        if (isHuman) cout << endl << "Студенты со средним баллом > 4.0, упорядоченные по убыванию среднего балла:" << endl;
+        printHighAverageStudents(filteredStudents, M);
     }
     else {
         if (isHuman) cout << "Нет студентов со средним баллом > 4.0" << endl;
     }
 
-    if (isHuman) cout << endl << "Сводка по группам:" << endl;
-    for (int i = 0; i < N; ) {
-        string currentGroup = students[i].groupNumber;
-        int count = 0;
-        int badCount = 0;
-        while (i < N && students[i].groupNumber == currentGroup) {
-            count++;
+    GroupSummary* summaries = new GroupSummary[N];
+    int summaryCount = 0;
+    for (int i = 0; i < N;) {
+        GroupSummary summary;
+        summary.groupNumber = students[i].groupNumber;
+        summary.studentCount = 0;
+        summary.badGradeCount = 0;
+        while (i < N&& students[i].groupNumber == summary.groupNumber) {
+            summary.studentCount++;
             if (students[i].hasBadGrades()) {
-                badCount++;
+                summary.badGradeCount++;
             }
             i++;
         }
-        if (isHuman) {
-            cout << "Группа " << currentGroup << ": всего студентов - "
-                << count << ", с плохими оценками - " << badCount << endl;
-        }
+        summaries[summaryCount++] = summary;
     }
+
+    sort(summaries, summaries + summaryCount, [](const GroupSummary& a, const GroupSummary& b) {
+        return a.badGradeCount > b.badGradeCount;
+        });
+    
+    if (isHuman) cout << endl << "Сводка по группам:" << endl;
+    printGroupSummaryTable(summaries, summaryCount);
 
     delete[] students;
     delete[] filteredStudents;
+    delete[] summaries;
     return 0;
 }
