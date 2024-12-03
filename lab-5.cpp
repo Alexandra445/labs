@@ -1,9 +1,9 @@
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <limits>
-#include <algorithm>
-#define NOMINMAX
+#include <iostream> 
+#include <iomanip> 
+#include <string> 
+#include <limits> 
+#include <algorithm> 
+#define NOMINMAX 
 #include <Windows.h>
 
 using namespace std;
@@ -58,21 +58,23 @@ void stableSortByAverageGrade(STUDENT* students, int n) {
     }
 }
 
-void printStudentTable(const STUDENT* students, int n) {
+void printStudentTable(const STUDENT* students, int n, bool isHuman) {
     const int groupWidth = 15;
     const int nameWidth = 30;
     const int gradesWidth = 20;
 
-    cout << left << setw(groupWidth) << "Группа" << "|"
-        << setw(nameWidth) << "Имя" << "|"
-        << setw(gradesWidth) << "Оценки" << endl;
-    cout << string(groupWidth, '-') << "+"
-        << string(nameWidth, '-') << "+"
-        << string(gradesWidth, '-') << endl;
+    if (isHuman) {
+        cout << left << setw(groupWidth) << "Группа" << "|"
+             << setw(nameWidth) << "Имя" << "|"
+             << setw(gradesWidth) << "Оценки" << endl;
+        cout << string(groupWidth, '-') << "+"
+             << string(nameWidth, '-') << "+"
+             << string(gradesWidth, '-') << endl;
+    }
 
     for (int i = 0; i < n; ++i) {
         cout << left << setw(groupWidth) << students[i].groupNumber << "|"
-            << setw(nameWidth) << students[i].name << "|";
+             << setw(nameWidth) << students[i].name << "|";
 
         string grades;
         for (int j = 0; j < 5; ++j) {
@@ -83,44 +85,48 @@ void printStudentTable(const STUDENT* students, int n) {
     }
 }
 
-void printHighAverageStudents(const STUDENT* students, int n) {
+void printHighAverageStudents(const STUDENT* students, int n, bool isHuman) {
     const int groupWidth = 15;
     const int nameWidth = 30;
     const int avgWidth = 15;
 
-    cout << left << setw(groupWidth) << "Группа" << "|"
-        << setw(nameWidth) << "Имя" << "|"
-        << setw(avgWidth) << "Средний балл" << endl;
-    cout << string(groupWidth, '-') << "+"
-        << string(nameWidth, '-') << "+"
-        << string(avgWidth, '-') << endl;
+    if (isHuman) {
+        cout << left << setw(groupWidth) << "Группа" << "|"
+             << setw(nameWidth) << "Имя" << "|"
+             << setw(avgWidth) << "Средний балл" << endl;
+        cout << string(groupWidth, '-') << "+"
+             << string(nameWidth, '-') << "+"
+             << string(avgWidth, '-') << endl;
+    }
 
     for (int i = 0; i < n; ++i) {
         float avg = students[i].averageGrade();
         cout << left << setw(groupWidth) << students[i].groupNumber << "|"
-            << setw(nameWidth) << students[i].name << "|"
-            << setw(avgWidth)
-            << defaultfloat << setprecision(2)
-            << avg << endl;
+             << setw(nameWidth) << students[i].name << "|"
+             << setw(avgWidth)
+             << defaultfloat << setprecision(2)
+             << avg << endl;
     }
 }
 
-void printGroupSummaryTable(const GroupSummary* summaries, int count) {
+void printGroupSummaryTable(const GroupSummary* summaries, int count, bool isHuman) {
     const int groupWidth = 15;
     const int totalWidth = 20;
     const int badGradeWidth = 25;
 
-    cout << left << setw(groupWidth) << "Группа" << "|"
-        << setw(totalWidth) << "Всего студентов" << "|"
-        << setw(badGradeWidth) << "С плохими оценками" << endl;
-    cout << string(groupWidth, '-') << "+"
-        << string(totalWidth, '-') << "+"
-        << string(badGradeWidth, '-') << endl;
+    if (isHuman) {
+        cout << left << setw(groupWidth) << "Группа" << "|"
+             << setw(totalWidth) << "Всего студентов" << "|"
+             << setw(badGradeWidth) << "С плохими оценками" << endl;
+        cout << string(groupWidth, '-') << "+"
+             << string(totalWidth, '-') << "+"
+             << string(badGradeWidth, '-') << endl;
+    }
 
     for (int i = 0; i < count; ++i) {
         cout << left << setw(groupWidth) << summaries[i].groupNumber << "|"
-            << setw(totalWidth) << summaries[i].studentCount << "|"
-            << setw(badGradeWidth) << summaries[i].badGradeCount << endl;
+             << setw(totalWidth) << summaries[i].studentCount << "|"
+             << setw(badGradeWidth) << summaries[i].badGradeCount << endl;
     }
 }
 
@@ -166,7 +172,7 @@ int main(int argc, char* argv[]) {
 
     stableSortByGroup(students, N);
     if (isHuman) cout << "Полный список студентов по возрастанию номера группы:" << endl;
-    printStudentTable(students, N);
+    printStudentTable(students, N, isHuman);
 
     STUDENT* filteredStudents = new STUDENT[N];
     int M = 0;
@@ -180,7 +186,7 @@ int main(int argc, char* argv[]) {
 
     if (M > 0) {
         if (isHuman) cout << endl << "Студенты со средним баллом > 4.0, упорядоченные по убыванию среднего балла:" << endl;
-        printHighAverageStudents(filteredStudents, M);
+        printHighAverageStudents(filteredStudents, M, isHuman);
     }
     else {
         if (isHuman) cout << "Нет студентов со средним баллом > 4.0" << endl;
@@ -193,7 +199,7 @@ int main(int argc, char* argv[]) {
         summary.groupNumber = students[i].groupNumber;
         summary.studentCount = 0;
         summary.badGradeCount = 0;
-        while (i < N&& students[i].groupNumber == summary.groupNumber) {
+        while (i < N && students[i].groupNumber == summary.groupNumber) {
             summary.studentCount++;
             if (students[i].hasBadGrades()) {
                 summary.badGradeCount++;
@@ -205,10 +211,10 @@ int main(int argc, char* argv[]) {
 
     sort(summaries, summaries + summaryCount, [](const GroupSummary& a, const GroupSummary& b) {
         return a.badGradeCount > b.badGradeCount;
-        });
-    
+    });
+
     if (isHuman) cout << endl << "Сводка по группам:" << endl;
-    printGroupSummaryTable(summaries, summaryCount);
+    printGroupSummaryTable(summaries, summaryCount, isHuman);
 
     delete[] students;
     delete[] filteredStudents;
