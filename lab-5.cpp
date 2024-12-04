@@ -76,15 +76,13 @@ void printStudentTable(const STUDENT* students, int n) {
 }
 
 void printHighAverageStudents(const STUDENT* students, int n) {
-    bool found = false;  
+    const int groupWidth = 15;
+    const int nameWidth = 30;
+    const int avgWidth = 15;
+
     for (int i = 0; i < n; ++i) {
-        if (students[i].averageGrade() > 4.0) {
-            found = true;
-            cout << students[i].groupNumber << ", " << students[i].name << " - " << "avg(" << fixed << setprecision(2) << students[i].averageGrade() << ")" << endl;
-        }
-    }
-    if (!found) {
-        cout << "NO" << endl;
+        float avg = students[i].averageGrade();
+        cout << students[i].groupNumber << ", " << students[i].name << " - " << avg << endl;
     }
 }
 
@@ -109,8 +107,8 @@ void printGroupSummaryTable(const GroupSummary* summaries, int count, bool isHum
             << string(badGradeWidth, '-') << endl;
         for (int i = 0; i < count; ++i) {
             cout << left << setw(groupWidth) << truncate(summaries[i].groupNumber, groupWidth) << "|"
-                << setw(totalWidth) << truncate(to_string(summaries[i].studentCount), totalWidth) << "|"
-                << setw(badGradeWidth) << truncate(to_string(summaries[i].badGradeCount), badGradeWidth) << endl;
+                << setw(totalWidth) << truncate(std::to_string(summaries[i].studentCount), totalWidth) << "|"
+                << setw(badGradeWidth) << truncate(std::to_string(summaries[i].badGradeCount), badGradeWidth) << endl;
         }
     }
     else {
@@ -174,10 +172,13 @@ int main(int argc, char* argv[]) {
 
     stableSortByAverageGrade(filteredStudents, M);
 
-    if (isHuman) {
-        cout << endl << "Студенты со средним баллом > 4.0, упорядоченные по убыванию среднего балла:" << endl;
+    if (M > 0) {
+        if (isHuman) cout << endl << "Студенты со средним баллом > 4.0, упорядоченные по убыванию среднего балла:" << endl;
+        printHighAverageStudents(filteredStudents, M);
     }
-    printHighAverageStudents(filteredStudents, M);
+    else {
+        cout << "NO" << endl;
+    }
 
     GroupSummary* summaries = new GroupSummary[N];
     int summaryCount = 0;
