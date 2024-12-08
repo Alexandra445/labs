@@ -1,14 +1,15 @@
 #include <iostream>
 #include <cmath>
-#include <cstring>
-#include <cassert>  
+#include <cstring>  
+#include <iomanip>
+#include <vector>
 
 using namespace std;
 
 constexpr size_t capacity = 15;
 const double EPSILON = 1e-6;
 
-double Function(double x, double a, double b, double c) {
+static double Function(double x, double a, double b, double c) {
     if (x < 0 && b != 0) {
         return a * x * x + b;
     }
@@ -20,7 +21,7 @@ double Function(double x, double a, double b, double c) {
     }
 }
 
-void PrintArray(const double* array_ptr, const size_t length) {
+static void PrintArray(const double* array_ptr, const size_t length) {
     for (size_t i = 0; i < length; ++i) {
         if (i == length - 1) {
             std::cout << array_ptr[i] << std::endl;
@@ -29,10 +30,97 @@ void PrintArray(const double* array_ptr, const size_t length) {
             std::cout << array_ptr[i] << " ";
         }
     }
+} 
+
+static double* SelectSort(double from[]) {
+    double* to = new double[capacity];
+    for (size_t i = 0; i < capacity; ++i) {
+        to[i] = from[i];
+    } 
+    for (size_t i = 0; i < capacity - 1; ++i) {
+        for (size_t j = i + 1; j < capacity; ++j) {
+            if (to[i] > to[j]) {
+                std::swap(to[i], to[j]);
+            }
+        }
+    }
+    return to;
 }
 
-bool IsPowerOfTwo(double n) {
-    return n > 0 && std::fmod(n, 1) == 0 && (std::log2(n) == std::floor(std::log2(n)));
+static void FreeArray(double* arr_) {
+    if (arr_ != nullptr) {
+        delete[] arr_;
+    }
+}
+
+static size_t ComputeReplays(double arr_[]) {
+    double* sortedArr = SelectSort(arr_);
+    size_t replay = 0;
+    size_t i = 0;
+
+    while (i < capacity) { 
+        size_t count = 0;
+        while ((i + count < capacity) && (sortedArr[i] == sortedArr[i + count])) {
+            count++;
+        }
+        if (count > 1) {
+            replay++;
+        }
+        i += count; 
+    }
+
+    delete[] sortedArr; 
+    return replay;
+}
+
+template <typename T>
+static bool IsPowerOfTwo(T num) {
+    if (num <= 0.) {
+        return false;
+    }
+    double log2num = std::log2(num);
+    return std::fabs(log2num - std::round(log2num)) < 1e-9;
+}
+
+static int ComputeTwo(const double arr_[]) {
+    for (size_t i = 0; i < capacity; ++i) {
+        if (IsPowerOfTwo(arr_[i])) {
+            size_t j = i + 1;
+            double last_num = arr_[i];
+            while (j < capacity && IsPowerOfTwo(arr_[j]) && arr_[j] > last_num) {
+                last_num = arr_[j];
+                ++j;
+            }
+
+            if (j == capacity) {
+                return i; 
+            }
+        }
+    }
+    return -1;  
+}
+
+static void PrintTable(const double* arr, double x_start, double step, bool reverse = false) {
+    cout << "_______________________________" << endl;
+    cout << "|     x     |       F(x)      |" << endl;
+    cout << "|___________|_________________|" << endl;
+
+    for (size_t i = 0; i < capacity; ++i) {
+        double x = x_start + i * step;
+        if (reverse) x = -x;
+        cout << "|" << std::setw(10) << right << x << " | "
+            << setw(15) << fixed << std::setprecision(2) << arr[i] << " |" << endl;
+    }
+
+    cout << "|___________|_________________|" << endl;
+}
+
+static void ReplaceZeros(double* arr_) {
+    for (size_t i = 0; i < capacity; ++i) {
+        if (arr_[i] == 0.0 && signbit(arr_[i])) {
+            arr_[i] = 0.0;
+        }
+    }
 }
 
 int main(int argc, const char* argv[]) {
@@ -78,69 +166,14 @@ int main(int argc, const char* argv[]) {
     double mn_2 = min({ FirstArr[5], FirstArr[6], FirstArr[7], FirstArr[8], FirstArr[9] });
     double mn_3 = min({ FirstArr[10], FirstArr[11], FirstArr[12], FirstArr[13], FirstArr[14] });
 
-    double SortArr[capacity] = { 0.0 };
-    for (size_t i = 0; i < capacity; ++i) {
-        SortArr[i] = FirstArr[i];
-    }
-
-    // Сортировка выбором
-    for (size_t i = 0; i < capacity - 1; ++i) {
-        for (size_t j = i + 1; j < capacity; ++j) {
-            if (SortArr[i] > SortArr[j]) {
-                std::swap(SortArr[i], SortArr[j]);
-            }
-        }
-    }
-
-    size_t Replay = 0;
-    bool counted[capacity] = { false };
-    for (int i = 0; i < capacity; i++) {
-        if (counted[i]) continue;
-
-        size_t count = 1;
-        for (int j = i + 1; j < capacity; j++) {
-            if (FirstArr[i] == FirstArr[j]) {
-                count++;
-                counted[j] = true;
-            }
-        }
-        if (count > 1) {
-            Replay++;
-        }
-    }
-
-    int two = -1;
-    for (size_t i = 0; i < capacity; ++i) {
-        if (IsPowerOfTwo(FirstArr[i])) {
-            size_t j = i;
-
-            double last_num = FirstArr[i];
-
-            while (j < capacity && IsPowerOfTwo(last_num) && FirstArr[j] >= last_num && IsPowerOfTwo(FirstArr[j])) {
-                last_num = FirstArr[j];
-                ++j;
-            }
-
-            if (j == capacity) {
-                two = i;
-                break;
-            }
-        }
-    }
+    double* SortArr = SelectSort(FirstArr); 
+    size_t Replay = ComputeReplays(FirstArr); 
+    int two = ComputeTwo(FirstArr);
 
     // Замена -0.0 на 0.0
-
-    for (size_t i = 0; i < capacity; ++i) {
-        if (FirstArr[i] == 0.0 && signbit(FirstArr[i])) {
-            FirstArr[i] = 0.0;
-        }
-        if (SecondArr[i] == 0.0 && signbit(SecondArr[i])) {
-            SecondArr[i] = 0.0;
-        }
-        if (SortArr[i] == 0.0 && signbit(SortArr[i])) {
-            SortArr[i] = 0.0;
-        }
-    }
+    ReplaceZeros(FirstArr);
+    ReplaceZeros(SecondArr);
+    ReplaceZeros(SortArr); 
 
     double NewFirstArr[capacity] = { 0.0 };
     double NewSecondArr[capacity] = { 0.0 };
@@ -168,12 +201,13 @@ int main(int argc, const char* argv[]) {
     }
 
     if (isHuman) {
-        cout << "Первый массив: ";
-        PrintArray(FirstArr, capacity);
+        cout << "Первый массив: " << std::endl; 
+        PrintTable(FirstArr, x1, step);
 
-        cout << "Второй массив: ";
-        PrintArray(SecondArr, capacity);
+        cout << "Второй массив: " << std::endl; 
+        PrintTable(SecondArr, x1, step, true);
 
+        std::cout << "Минимумы: " << std::endl;
         cout << mn_1 << endl;
         cout << mn_2 << endl;
         cout << mn_3 << endl;
@@ -203,5 +237,7 @@ int main(int argc, const char* argv[]) {
         PrintArray(NewSecondArr, capacity);
     }
 
+    FreeArray(SortArr);
+
     return 0;
-}
+} 
